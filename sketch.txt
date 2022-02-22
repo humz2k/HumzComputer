@@ -13,3 +13,16 @@ Types:
 signed -> 01
 unsigned -> 10
 instruction -> 11
+
+
+Address Modes:
+0 -> register
+1 -> [register]
+2 -> memory
+3 -> [memory]
+
+OPS (ALL CONSTS ARE UNSIGNED, AND IGNORE THE ADDRESSMODE BITS. CONSTS HAVE MAX OF 1023):
+0 -> Load Const to Addr: const, addr
+1 -> Inc Addr by Const: const, addr
+2 -> Dec Addr by Const: const, addr
+3 -> Copy Addr1 to Addr2: addr1, addr2
