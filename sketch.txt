@@ -1,0 +1,15 @@
+TYPE -> 2 bits
+OPCODE -> 6 bits
+RAMADDR -> 12 Bits
+RAMADDR -> 12 Bits
+
+RAM is made up of 1024 addresses with 32 bits each.
+
+OPCODE of 1111 means the rest of the ram entry is data
+
+Registers are 24 bits
+
+Types:
+signed -> 01
+unsigned -> 10
+instruction -> 11
