@@ -4,8 +4,8 @@
 #stor2 11
 
 @stor UNSIGNED temp
-@stor2 SIGNED temp
+@stor2 SIGNED 69
 
 //comment
-LDM 60 MEMORY_DIR stor2
-DEC 120 MEMORY_DIR stor2
+CPY MEMORY_DIR stor2 REGISTER_DIR GA
+CPY REGISTER_DIR GA MEMORY_DIR stor

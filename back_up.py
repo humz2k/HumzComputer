@@ -151,7 +151,7 @@ class Ram:
         return ram_content(this_type,op,addr1,addr1mode,addr2,addr2mode,long_addr,data)
 
     def clear_contents(self,addr):
-        ram.ram[addr] = 0
+        self.ram[addr] = 0
 
     def set_contents(self,addr,content):
         if content.type == DataType.INSTRUCTION:
@@ -366,9 +366,27 @@ class CPU:
                 self.cpu.registers[addr].set_contents(contents)
             self.cpu.pc.increment()
 
+        def op_CLR(self,command):
+            if command.addr1mode != AddrModes.REGISTER_DIR:
+                addr = self.cpu.resolve_addr(command.addr1,command.addr1mode)
+                self.cpu.ram.clear_contents(addr)
+            else:
+                addr = command.addr1
+                self.cpu.registers[addr].set_raw(0)
+
+        #FINISH
+        def op_ZER(self,command):
+            if command.addr1mode != AddrModes.REGISTER_DIR:
+                addr = self.cpu.resolve_addr(command.addr1,command.addr1mode)
+                contents = self.cpu.ram.get_contents(addr)
+            else:
+                addr = command.addr1
+                self.cpu.registers[addr].set_raw(0)
+
 class Parser:
     def __init__(self):
         self.const_addr = [OP.LDM,OP.INC,OP.DEC]
+        self.addr = [OP.CLR,OP.ZER]
 
     def parse(self,file):
         parsed = []
@@ -407,7 +425,6 @@ class Parser:
             stores.append([location,ram_content(type,0,0,0,0,0,0,data)])
 
         for line in [l for l in lines if (l[0] != '#' and l[0] != '/' and l[0] != '@')]:
-            print("READING",line)
             outline = None
             command = line.split()
             type = DataType.INSTRUCTION
@@ -432,6 +449,17 @@ class Parser:
                 else:
                     addr2 = REG[addr2]
                 outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
+
+            if op in self.addr:
+                addr1mode = AddrModes[command[1]]
+                addr1 = command[2]
+                if command[2] in consts:
+                    addr1 = consts[command[2]]
+                if addr1mode == AddrModes.MEMORY_DIR or addr1mode == AddrModes.MEMORY_IDIR:
+                    addr1 = int(addr1)
+                else:
+                    addr1 = REG[addr1]
+                outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
             parsed.append(outline)
 
         return stores,parsed
@@ -441,9 +469,6 @@ cpu = CPU()
 parser = Parser()
 
 parsed = parser.parse("input.ha")
-
-print(parsed[0])
-print(parsed[1])
 
 cpu.load(parsed)
 

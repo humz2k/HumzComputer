@@ -22,7 +22,14 @@ Address Modes:
 3 -> [memory]
 
 OPS (ALL CONSTS ARE UNSIGNED, AND IGNORE THE ADDRESSMODE BITS. CONSTS HAVE MAX OF 1023):
-0 -> Load Const to Addr: const, addr
-1 -> Inc Addr by Const: const, addr
-2 -> Dec Addr by Const: const, addr
-3 -> Copy Addr1 to Addr2: addr1, addr2
+LDM const, addr
+INC const, addr
+DEC const, addr
+CLR addr
+ZER addr
+CPY addr addr
+ADD addr addr
+SUB addr addr
+MUL addr addr
+COM addr addr
+COC const, addr
