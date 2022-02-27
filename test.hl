@@ -1,0 +1,9 @@
+var int a;
+var unsigned_int b;
+var int c;
+list unsigned_int d length 5;
+set a = -5 + b + 105;
+if a == 5;
+{test;
+
+yee;};
