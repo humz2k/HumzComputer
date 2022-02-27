@@ -36,18 +36,21 @@ class Register:
 
         this_type = ram_content_helpers.get_type(self.val)
         data = ram_content_helpers.get_data(self.val)
+
+        addr1,addr1mode, addr2, addr2mode = 0,0,0,0
+
         if this_type == DataType.SIGNED:
             data = twos_comp(data,30)
-
-        register_address_modes = [AddrModes.REGISTER_DIR,AddrModes.REGISTER_IDIR]
-        addr1 = ram_content_helpers.get_addr1(self.val)
-        addr1mode = ram_content_helpers.get_addr1mode(self.val)
-        if addr1mode in register_address_modes:
-            addr1 = REG(addr1)
-        addr2 = ram_content_helpers.get_addr2(self.val)
-        addr2mode = ram_content_helpers.get_addr2mode(self.val)
-        if addr2mode in register_address_modes:
-            addr2 = REG(addr2)
+        if this_type == DataType.INSTRUCTION:
+            register_address_modes = [AddrModes.REGISTER_DIR,AddrModes.REGISTER_IDIR]
+            addr1 = ram_content_helpers.get_addr1(self.val)
+            addr1mode = ram_content_helpers.get_addr1mode(self.val)
+            if addr1mode in register_address_modes:
+                addr1 = REG(addr1)
+            addr2 = ram_content_helpers.get_addr2(self.val)
+            addr2mode = ram_content_helpers.get_addr2mode(self.val)
+            if addr2mode in register_address_modes:
+                addr2 = REG(addr2)
         return ram_content(this_type,ram_content_helpers.get_op(self.val),addr1,addr1mode,addr2,addr2mode,ram_content_helpers.get_long_addr(self.val),data)
 
 

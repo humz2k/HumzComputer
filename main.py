@@ -5,6 +5,7 @@ from op_map import *
 from registers import *
 from helpers import *
 from ram import *
+from screen import *
 import sys
 
 class CPU:
@@ -18,6 +19,8 @@ class CPU:
         self.op_map = OPMap(self)
         self.op_map.generate_enum_opmap()
         self.ops = self.op_map.get_ops()
+
+        self.screen = screen()
 
     def print_register(self,register):
         print(str(register) + ":",self.registers[register].get_contents())
@@ -40,7 +43,7 @@ class CPU:
             return self.registers[addr].get_contents().data
 
     def loop(self):
-        for i in range(5):
+        while self.register_memory.ci.get_contents().op != OP.EOF:
             self.step()
 
     def load(self,parsed):
@@ -52,9 +55,12 @@ class CPU:
 
 class Parser:
     def __init__(self):
-        self.const_addr = [OP.LDM,OP.INC,OP.DEC]
-        self.addr = [OP.CLR,OP.ZER]
-        self.addr_addr = [OP.CPY]
+        self.const_addr = [OP.LDM,OP.INC,OP.DEC,OP.COC]
+        self.addr = [OP.CLR,OP.ZER,OP.PSH]
+        self.const = [OP.JMP,OP.JME,OP.JMG,OP.JML]
+        self.none = [OP.FLP,OP.EOF]
+        self.addr_addr = [OP.CPY, OP.ADD, OP.SUB, OP.MUL, OP.DIV, OP.COM]
+        self.jumps = [OP.JMP,OP.JME,OP.JMG,OP.JML]
 
     def parse(self,file):
         parsed = []
@@ -92,63 +98,89 @@ class Parser:
 
             stores.append([location,ram_content(type,0,0,0,0,0,0,data)])
 
+        to_replace = {}
+        count = 0
         for line in [l for l in lines if (l[0] != '#' and l[0] != '/' and l[0] != '@')]:
+            if line[0] == ".":
+                to_replace[line[1:]] = count
+            else:
+                count += 1
+
+        for line in [l for l in lines if (l[0] != '#' and l[0] != '/' and l[0] != '@')]:
+
             outline = None
             command = line.split()
             type = DataType.INSTRUCTION
-            op = OP[command[0]]
             addr1 = 0
             addr1mode = 0
             addr2 = 0
             addr2mode = 0
             longaddr = 0
+            if line[0] == ".":
+                pass
+            else:
 
-            if op in self.const_addr:
-                if command[1] in consts:
-                    addr1 = abs(int(consts[command[1]]))
-                else:
+                op = OP[command[0]]
+
+                if op in self.jumps:
+                    if command[1] in to_replace:
+                        command[1] = to_replace[command[1]]
+
+
+
+                if op in self.none:
+                    outline = ram_content(type,op,0,0,0,0,0,0)
+
+                if op in self.const:
                     addr1 = abs(int(command[1]))
-                addr2mode = AddrModes[command[2]]
-                addr2 = command[3]
-                if command[3] in consts:
-                    addr2 = consts[command[3]]
-                if addr2mode == AddrModes.MEMORY_DIR or addr2mode == AddrModes.MEMORY_IDIR:
-                    addr2 = int(addr2)
-                else:
-                    addr2 = REG[addr2]
-                outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
+                    outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
 
-            if op in self.addr:
-                addr1mode = AddrModes[command[1]]
-                addr1 = command[2]
-                if command[2] in consts:
-                    addr1 = consts[command[2]]
-                if addr1mode == AddrModes.MEMORY_DIR or addr1mode == AddrModes.MEMORY_IDIR:
-                    addr1 = int(addr1)
-                else:
-                    addr1 = REG[addr1]
-                outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
+                if op in self.const_addr:
+                    if command[1] in consts:
+                        addr1 = abs(int(consts[command[1]]))
+                    else:
+                        addr1 = abs(int(command[1]))
+                    addr2mode = AddrModes[command[2]]
+                    addr2 = command[3]
+                    if command[3] in consts:
+                        addr2 = consts[command[3]]
+                    if addr2mode == AddrModes.MEMORY_DIR or addr2mode == AddrModes.MEMORY_IDIR:
+                        addr2 = int(addr2)
+                    else:
+                        addr2 = REG[addr2]
+                    outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
 
-            if op in self.addr_addr:
-                addr1mode = AddrModes[command[1]]
-                addr1 = command[2]
-                if command[2] in consts:
-                    addr1 = consts[command[2]]
-                if addr1mode == AddrModes.MEMORY_DIR or addr1mode == AddrModes.MEMORY_IDIR:
-                    addr1 = int(addr1)
-                else:
-                    addr1 = REG[addr1]
-                addr2mode = AddrModes[command[3]]
-                addr2 = command[4]
-                if command[4] in consts:
-                    addr2 = consts[command[4]]
-                if addr2mode == AddrModes.MEMORY_DIR or addr2mode == AddrModes.MEMORY_IDIR:
-                    addr2 = int(addr2)
-                else:
-                    addr2 = REG[addr2]
-                outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
+                if op in self.addr:
+                    addr1mode = AddrModes[command[1]]
+                    addr1 = command[2]
+                    if command[2] in consts:
+                        addr1 = consts[command[2]]
+                    if addr1mode == AddrModes.MEMORY_DIR or addr1mode == AddrModes.MEMORY_IDIR:
+                        addr1 = int(addr1)
+                    else:
+                        addr1 = REG[addr1]
+                    outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
 
-            parsed.append(outline)
+                if op in self.addr_addr:
+                    addr1mode = AddrModes[command[1]]
+                    addr1 = command[2]
+                    if command[2] in consts:
+                        addr1 = consts[command[2]]
+                    if addr1mode == AddrModes.MEMORY_DIR or addr1mode == AddrModes.MEMORY_IDIR:
+                        addr1 = int(addr1)
+                    else:
+                        addr1 = REG[addr1]
+                    addr2mode = AddrModes[command[3]]
+                    addr2 = command[4]
+                    if command[4] in consts:
+                        addr2 = consts[command[4]]
+                    if addr2mode == AddrModes.MEMORY_DIR or addr2mode == AddrModes.MEMORY_IDIR:
+                        addr2 = int(addr2)
+                    else:
+                        addr2 = REG[addr2]
+                    outline = ram_content(type,op,addr1,addr1mode,addr2,addr2mode,0,0)
+
+                parsed.append(outline)
 
         return stores,parsed
 
@@ -158,11 +190,10 @@ parser = Parser()
 
 parsed = parser.parse("input.ha")
 
+#print(parsed)
+
 cpu.load(parsed)
 
 cpu.loop()
 
-print(cpu.registers[REG.GA].get_contents())
-
-cpu.ram.print(10,2)
-cpu.ram.print_content(10,2)
+#cpu.ram.print_content()

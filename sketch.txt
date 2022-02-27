@@ -22,6 +22,9 @@ Address Modes:
 3 -> [memory]
 
 OPS (ALL CONSTS ARE UNSIGNED, AND IGNORE THE ADDRESSMODE BITS. CONSTS HAVE MAX OF 1023):
+@location type value
+#const val
+
 LDM const, addr
 INC const, addr
 DEC const, addr
@@ -33,3 +36,10 @@ SUB addr addr
 MUL addr addr
 COM addr addr
 COC const, addr
+PSH addr
+FLP
+.jump_point
+JMP jump_point
+JME jump_point
+JML jump_point
+JMG jump_point
