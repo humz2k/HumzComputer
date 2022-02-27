@@ -1,8 +1,10 @@
-var int a;
-var unsigned_int b;
-var int c;
-list unsigned_int d length 5;
-set a = -5 + b + 105;
+int a = 5;
+unsigned_int b;
+int c = "a";
+unsigned_int d[4] = "TEST";
+int e[5] = [1,2,3,4,5];
+
+a = ( -5 + b ) + c + d[2];
 if a == 5;
 {test;
 

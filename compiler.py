@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from shunting import *
 
 @dataclass
 class var:
@@ -33,28 +34,54 @@ class Compiler:
 
     def compile(self):
         self.find_variables()
-        self.find_lists()
         out = self.first_pass()
+        out = self.second_pass(out)
         print(out)
+        print(self.variables)
 
     def add_variable(self,name,type,val,delta=1):
-        self.variables[name] = var(type,self.var_start,val)
+        if not name in self.variables:
+            self.variables[name] = [var(type,self.var_start,val)]
+            self.var_start += delta
+            return
+        self.variables[name].append(var(type,self.var_start,val))
         self.var_start += delta
 
     def find_variables(self):
-        for i in [j.split(" ") for j in self.lines if j.split(" ")[0] == "var"]:
-            self.add_variable(i[2],i[1],0)
-
-    def find_lists(self):
-        for i in [j.split(" ") for j in self.lines if j.split(" ")[0] == "list"]:
-            type = i[1]
-            name = i[2]
-            size = int(i[4])
-            self.add_variable(name,type,0,size)
+        for i in [j.split(" ") for j in self.lines if j.split(" ")[0] in ["int","unsigned_int"]]:
+            name = i[1]
+            type = i[0]
+            size = 1
+            if "[" in name:
+                size = int(i[1].split("[")[1][:-1])
+                name = i[1].split("[")[0]
+            val = 0
+            vals = [0] * size
+            if len(i) > 2:
+                val = i[3]
+                vals = []
+                is_int = False
+                try:
+                    val = int(val)
+                    is_int = True
+                except:
+                    pass
+                if is_int:
+                    vals = [int(i[3])] * size
+                else:
+                    if val[0] == '"' and val[-1] == '"':
+                        for i in range(size):
+                            vals.append(ord(val[1+i]))
+                    elif val[0] == "[" and val[-1] == "]":
+                        this_list = val[1:-1].split(",")
+                        for i in range(size):
+                            vals.append(int(this_list[i]))
+            for i in range(size):
+                self.add_variable(name,type,vals[i])
 
     def first_pass(self):
         out = []
-        for line in [j for j in self.lines if not j.split(" ")[0] in ["var","list"]]:
+        for line in [j for j in self.lines if not j.split(" ")[0] in ["int","unsigned_int"]]:
             command = line.split(" ")
             for idx in range(len(command)):
                 i = idx + 3
@@ -73,6 +100,26 @@ class Compiler:
                     self.consts += 1
 
             out.append(" ".join(command))
+
+        return out
+
+    def second_pass(self,inp):
+        out = []
+        for line in inp:
+            if len(line.split(" ")) > 2:
+                #assignments
+                if line.split(" ")[1] == "=":
+                    expr = line.split(" ")[2:]
+                    for i in range(len(expr)):
+                        if "[" in expr[i]:
+                            var = expr[i].split("[")[0]
+                            offset = int(expr[i].split("[")[1][:-1])
+                            expr[i] = str(self.variables[var][0].address + offset)
+                    for i in range(len(expr)):
+                        if expr[i] in self.variables:
+                            expr[i] = str(self.variables[expr[i]][0].address)
+
+                    print(expr)
 
         return out
 
