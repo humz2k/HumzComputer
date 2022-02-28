@@ -37,6 +37,9 @@ MUL addr addr
 COM addr addr
 COC const, addr
 PSH addr
+PSI addr
+INP addr
+POP
 FLP
 .jump_point
 JMP jump_point

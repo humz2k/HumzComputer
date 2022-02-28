@@ -34,10 +34,12 @@ class Compiler:
 
     def compile(self):
         self.find_variables()
-        out = self.first_pass()
-        out = self.second_pass(out)
-        print(out)
-        print(self.variables)
+        out = self.find_consts(self.lines)
+        out = self.math(out)
+        out = self.resolve_addresses(out)
+        inst = self.pass_1(out)
+        assigns = self.get_assigns()
+        #print(self.variables)
 
     def add_variable(self,name,type,val,delta=1):
         if not name in self.variables:
@@ -79,12 +81,12 @@ class Compiler:
             for i in range(size):
                 self.add_variable(name,type,vals[i])
 
-    def first_pass(self):
+    def find_consts(self,inp):
         out = []
-        for line in [j for j in self.lines if not j.split(" ")[0] in ["int","unsigned_int"]]:
+        for line in [j for j in inp if not j.split(" ")[0] in ["int","unsigned_int"]]:
             command = line.split(" ")
             for idx in range(len(command)):
-                i = idx + 3
+                i = idx
                 try:
                     test = int(command[i])
                     number = True
@@ -103,7 +105,7 @@ class Compiler:
 
         return out
 
-    def second_pass(self,inp):
+    def math(self,inp):
         out = []
         for line in inp:
             if len(line.split(" ")) > 2:
@@ -119,8 +121,43 @@ class Compiler:
                         if expr[i] in self.variables:
                             expr[i] = str(self.variables[expr[i]][0].address)
 
-                    print(expr)
+                    out.append(" ".join(line.split(" ")[0:2] + expr))
+                else:
+                    out.append(line)
+            else:
+                out.append(line)
 
         return out
+
+    def resolve_addresses(self,inp):
+        out = []
+        for line in inp:
+            command = line.split(" ")
+            for i in range(len(command)):
+                var = command[i]
+                offset = 0
+                if "[" in command[i] and not '"' in command[i]:
+                    var = command[i].split("[")[0]
+                    offset = int(command[i].split("[")[1][:-1])
+                if var in self.variables:
+                    var = self.variables[var][0].address
+                    command[i] = str(var + offset)
+            out.append(" ".join(command))
+        return out
+
+    def get_assigns(self):
+        out = []
+        for i in self.variables.keys():
+            for j in self.variables[i]:
+                temp = "@" + str(j.address) + " " + ["UNSIGNED","SIGNED"][str(j.type) == "int"] + " " + str(j.val)
+                out.append(temp)
+        return out
+
+    def pass_1(self,inp):
+        out = []
+        for line in inp:
+            command = line.split(" ")
+            if command[1] == "=":
+                pass
 
 compiler = Compiler("test.hl")

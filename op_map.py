@@ -1,6 +1,9 @@
 from enum import IntEnum
+from inp_char import *
 
 from definitions import *
+
+getch = Getch()
 
 def _twos_comp(val,bits):
     if (val & (1 << (bits - 1))) != 0:
@@ -229,6 +232,19 @@ class OPMap:
             self.cpu.screen.push(contents.data)
         self.cpu.register_memory.pc.increment()
 
+    def op_PSI(self,command):
+        if command.addr1mode != AddrModes.REGISTER_DIR:
+            addr = self.cpu.resolve_addr(command.addr1,command.addr1mode)
+            contents = self.cpu.ram.get_contents(addr)
+            for i in str(contents.data):
+                self.cpu.screen.push(ord(i))
+        else:
+            addr = command.addr1
+            contents = self.cpu.registers[addr].get_contents()
+            for i in str(contents.data):
+                self.cpu.screen.push(ord(i))
+        self.cpu.register_memory.pc.increment()
+
     def op_FLP(self,command):
         self.cpu.screen.flip()
         self.cpu.register_memory.pc.increment()
@@ -253,6 +269,24 @@ class OPMap:
             self.cpu.register_memory.pc.set_raw(command.addr1)
         else:
             self.cpu.register_memory.pc.increment()
+
+    def op_POP(self,command):
+        self.cpu.screen.pop()
+        self.cpu.register_memory.pc.increment()
+
+    def op_INP(self,command):
+        temp = ord(getch())
+        if command.addr1mode != AddrModes.REGISTER_DIR:
+            addr = self.cpu.resolve_addr(command.addr1,command.addr1mode)
+            contents = self.cpu.ram.get_contents(addr)
+            contents.data = temp
+            self.cpu.ram.set_contents(addr,contents)
+        else:
+            addr = command.addr1
+            contents = self.cpu.registers[addr].get_contents()
+            contents.data = temp
+            self.cpu.registers[addr].set_contents(contents)
+        self.cpu.register_memory.pc.increment()
 
     def op_EOF(self,command):
         pass

@@ -1,0 +1,85 @@
+unsigned_int first = 0;
+unsigned_int second = 1;
+unsigned_int n;
+unsigned_int count = 0;
+
+unsigned_int in;
+
+unsigned_int temp = 0;
+unsigned_int temp1 = 0;
+
+unsigned_int end = 1;
+
+while end == 1; {
+
+  n = 0;
+  first = 0;
+  second = 1;
+  count = 0;
+  temp = 0;
+  temp1 = 0;
+  in = 0;
+  push "input: ";
+  flip;
+
+  while in != 13; {
+
+    input in;
+
+    if in > 30; {
+
+      push in;
+
+      temp1 = in - 48;
+
+      count = 0;
+
+      n = n * 10;
+
+      n = n + temp1;
+
+    };
+
+    flip;
+
+    temp = temp + 1;
+
+  };
+
+  push "\nn = ";
+  push_int n;
+  push "\n";
+
+  flip;
+
+  count = 0;
+
+  while count < n; {
+
+    count = count + 1;
+
+    unsigned_int third;
+
+    third = second + first;
+    first = second;
+    second = third;
+
+  };
+
+  push "fib = ";
+  push_int first;
+  push "\nq to quit, key to keep going\n";
+
+  flip;
+
+  input in;
+
+  if in == "q"; {
+
+    end = 0;
+
+  };
+
+  push "\n\n";
+
+};

@@ -18,6 +18,15 @@ class screen:
             return
         self.screen[-1] += char
 
+    def pop(self):
+        if len(self.screen[-1]) > 0:
+            self.screen[-1] = self.screen[-1][:-1]
+            return
+        try:
+            self.screen.pop(-1)
+        except:
+            pass
+
     def flip(self):
         clearConsole()
         for i in self.screen[-self.size[1]:]:

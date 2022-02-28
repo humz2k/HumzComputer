@@ -20,7 +20,7 @@ class Ram:
 
     def print_content(self,start=0,length=256):
         for i in range(start,start+length):
-            print(self.get_contents(i))
+            print(i,self.get_contents(i))
 
     def get_raw(self,addr):
         return self.ram[addr]

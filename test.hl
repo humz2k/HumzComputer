@@ -1,11 +1,26 @@
-int a = 5;
-unsigned_int b;
-int c = "a";
-unsigned_int d[4] = "TEST";
-int e[5] = [1,2,3,4,5];
+int a = 10923;
+int b = 20;
+int c = 10;
+int d = 10;
+unsigned_int e = 9;
 
-a = ( -5 + b ) + c + d[2];
-if a == 5;
-{test;
+while b > c; {
 
-yee;};
+b = b + -1;
+
+push "\n";
+push_int b;
+
+d = 0;
+while d != 5; {
+
+d = d + 1;
+push_int d;
+
+};
+
+};
+
+push "YEEET";
+
+flip;

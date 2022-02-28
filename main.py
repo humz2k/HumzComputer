@@ -28,7 +28,6 @@ class CPU:
     def step(self):
         self.register_memory.ci.set_raw(self.ram.get_raw(self.register_memory.pc.get_raw()))
         command = self.register_memory.ci.get_contents()
-
         if command.type == DataType.INSTRUCTION:
             self.ops[command.op](command)
         else:
@@ -56,9 +55,9 @@ class CPU:
 class Parser:
     def __init__(self):
         self.const_addr = [OP.LDM,OP.INC,OP.DEC,OP.COC]
-        self.addr = [OP.CLR,OP.ZER,OP.PSH]
+        self.addr = [OP.CLR,OP.ZER,OP.PSH,OP.PSI,OP.INP]
         self.const = [OP.JMP,OP.JME,OP.JMG,OP.JML]
-        self.none = [OP.FLP,OP.EOF]
+        self.none = [OP.FLP,OP.EOF,OP.POP]
         self.addr_addr = [OP.CPY, OP.ADD, OP.SUB, OP.MUL, OP.DIV, OP.COM]
         self.jumps = [OP.JMP,OP.JME,OP.JMG,OP.JML]
 
@@ -184,16 +183,19 @@ class Parser:
 
         return stores,parsed
 
-cpu = CPU()
+if __name__ == "__main__":
+    cpu = CPU()
 
-parser = Parser()
+    parser = Parser()
 
-parsed = parser.parse("input.ha")
+    parsed = parser.parse("input.ha")
 
-#print(parsed)
+    #print(parsed)
 
-cpu.load(parsed)
+    cpu.load(parsed)
 
-cpu.loop()
+    #cpu.ram.print_content()
 
-#cpu.ram.print_content()
+    cpu.loop()
+
+    cpu.ram.print_content(512,10)
