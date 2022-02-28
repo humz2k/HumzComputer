@@ -34,6 +34,6 @@ if __name__ == "__main__":
     for i in commands:
         files.add(get_raw(i))
 
-
+    print(files.data.count(get_raw(ram_content(DataType.INSTRUCTION,OP.EOF,0,0,0,0,0,0)))-1)
 
     files.save()
