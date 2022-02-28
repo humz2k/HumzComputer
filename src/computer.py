@@ -6,11 +6,14 @@ from registers import *
 from helpers import *
 from ram import *
 from screen import *
+from file_system import *
 import sys
 
 class CPU:
     def __init__(self):
         self.ram = Ram()
+
+        self.files = Files()
 
         self.register_memory = RegisterMemory()
         self.register_memory.generate_enum_registermap()
@@ -42,7 +45,7 @@ class CPU:
             return self.registers[addr].get_contents().data
 
     def loop(self):
-        while self.register_memory.ci.get_contents().op != OP.EOF:
+        while True:
             self.step()
 
     def load(self,parsed):
@@ -52,10 +55,45 @@ class CPU:
             self.ram.set_contents(idx,i)
         self.register_memory.pc.set_raw(0)
 
+    def load_file(self,file):
+        store_divide = get_raw(ram_content(DataType.INSTRUCTION,OP.XLM,0,0,0,0,0,0))
+        commands_divide = get_raw(ram_content(DataType.INSTRUCTION,OP.XLC,0,0,0,0,0,0))
+        eof_divide = get_raw(ram_content(DataType.INSTRUCTION,OP.EOF,0,0,0,0,0,0))
+        temp = [[]]
+        for i in self.files.data:
+            temp[-1].append(i)
+            if i == eof_divide:
+                temp.append([])
+        if file > (len(temp) - 2):
+            return self.load_file(0)
+        to_add = temp[file]
+        assigns = []
+        commands = []
+        is_assign = False
+        count = 0
+        while count < len(to_add):
+            i = to_add[count]
+            if i == store_divide:
+                is_assign = True
+            elif i == commands_divide:
+                is_assign = False
+            else:
+                if is_assign:
+                    assigns.append([to_add[count],to_add[count+1]])
+                    count += 1
+                else:
+                    commands.append(i)
+            count += 1
+        for i in assigns:
+            self.ram.ram[i[0]] = i[1]
+        for idx,i in enumerate(commands):
+            self.ram.ram[idx] = i
+
+
 class Parser:
     def __init__(self):
         self.const_addr = [OP.LDM,OP.INC,OP.DEC,OP.COC]
-        self.addr = [OP.CLR,OP.ZER,OP.PSH,OP.PSI,OP.INP]
+        self.addr = [OP.CLR,OP.ZER,OP.PSH,OP.PSI,OP.INP,OP.LFM]
         self.const = [OP.JMP,OP.JME,OP.JMG,OP.JML]
         self.none = [OP.FLP,OP.EOF,OP.POP,OP.XLM,OP.XLC]
         self.addr_addr = [OP.CPY, OP.ADD, OP.SUB, OP.MUL, OP.DIV, OP.COM]
@@ -186,16 +224,14 @@ class Parser:
 if __name__ == "__main__":
     cpu = CPU()
 
-    parser = Parser()
-
-    parsed = parser.parse("input.ha")
-
     #print(parsed)
 
-    cpu.load(parsed)
+    #cpu.load(parsed)
 
     #cpu.ram.print_content()
 
+    cpu.load_file(0)
+
     cpu.loop()
 
-    cpu.ram.print_content(512,10)
+    #cpu.ram.print_content(512,10)

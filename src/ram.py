@@ -10,6 +10,11 @@ class Ram:
         for i in range(1024):
             self.ram.append(0)
 
+    def clear(self):
+        self.ram = []
+        for i in range(1024):
+            self.ram.append(0)
+
     def print(self,start=0,length=256):
         line = 3
         for i in range(start,start+length):

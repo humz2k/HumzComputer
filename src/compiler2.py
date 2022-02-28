@@ -170,6 +170,17 @@ class Compiler:
             command = line.split(" ")
             if len(command) > 1:
 
+                if command[0] == "_load":
+                    file_to_load = command[1]
+                    offset = None
+                    if "[" in file_to_load:
+                        offset = file_to_load.split("[")[1][:-1]
+                        file_to_load = file_to_load.split("[")[0]
+                    out.append("LDM " + str(self.variables[file_to_load][0].address) + " REGISTER_DIR GA")
+                    if offset != None:
+                        out.append("ADD MEMORY_DIR " + str(self.variables[offset][0].address) + " REGISTER_DIR GA")
+                    out.append("LFM REGISTER_IDIR GA")
+
                 if command[0] == "while":
 
                     if_one = "while" + str(if_no)

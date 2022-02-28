@@ -1,32 +1,39 @@
 from file_system import *
 from computer import *
 from compiler2 import *
+import sys
 
-files = Files()
-compiler = Compiler("fib.hl")
-parser = Parser()
-parsed = parser.parse("out.ha")
+if __name__ == "__main__":
 
-for i in files.data:
-    print(i)
+    file = sys.argv[1]
+    overwrite = False
+    if len(sys.argv) > 2:
+        overwrite = sys.argv[2] == "-o"
 
-'''
+    files = Files()
+    compiler = Compiler(file)
+    parser = Parser()
+    parsed = parser.parse("out.ha")
 
-store_divide = get_raw(ram_content(DataType.INSTRUCTION,OP.XLM,0,0,0,0,0,0))
+    if overwrite:
+        files.data = []
 
-stores = parsed[0]
+    store_divide = get_raw(ram_content(DataType.INSTRUCTION,OP.XLM,0,0,0,0,0,0))
 
-commands_divide = get_raw(ram_content(DataType.INSTRUCTION,OP.XLM,0,0,0,0,0,0))
+    stores = parsed[0]
 
-commands = parsed[1]
+    commands_divide = get_raw(ram_content(DataType.INSTRUCTION,OP.XLC,0,0,0,0,0,0))
 
-files.add(store_divide)
-for i in stores:
-    files.add(i[0])
-    files.add(get_raw(i[1]))
-files.add(commands_divide)
-for i in commands:
-    files.add(get_raw(i))
+    commands = parsed[1]
 
-files.save()
-'''
+    files.add(store_divide)
+    for i in stores:
+        files.add(i[0])
+        files.add(get_raw(i[1]))
+    files.add(commands_divide)
+    for i in commands:
+        files.add(get_raw(i))
+
+
+
+    files.save()

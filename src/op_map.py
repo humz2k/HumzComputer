@@ -258,6 +258,18 @@ class OPMap:
         else:
             self.cpu.register_memory.pc.increment()
 
+    def op_LFM(self,command):
+
+        if command.addr1mode != AddrModes.REGISTER_DIR:
+            addr = self.cpu.resolve_addr(command.addr1,command.addr1mode)
+            temp = self.cpu.ram.get_contents(addr).data
+        else:
+            addr = command.addr1
+            temp = self.cpu.registers[addr].get_contents().data
+        self.cpu.ram.clear()
+        self.cpu.register_memory.pc.val = 0
+        self.cpu.load_file(temp)
+
     def op_JMG(self,command):
         if self.cpu.register_memory.eq.get_contents().data < 0:
             self.cpu.register_memory.pc.set_raw(command.addr1)
@@ -289,7 +301,10 @@ class OPMap:
         self.cpu.register_memory.pc.increment()
 
     def op_EOF(self,command):
-        pass
+        self.cpu.ram.clear()
+        self.cpu.register_memory.pc.val = 0
+        self.cpu.load_file(0)
+
 
     def op_XLM(self,command):
         pass
