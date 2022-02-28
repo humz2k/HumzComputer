@@ -57,7 +57,7 @@ class Parser:
         self.const_addr = [OP.LDM,OP.INC,OP.DEC,OP.COC]
         self.addr = [OP.CLR,OP.ZER,OP.PSH,OP.PSI,OP.INP]
         self.const = [OP.JMP,OP.JME,OP.JMG,OP.JML]
-        self.none = [OP.FLP,OP.EOF,OP.POP]
+        self.none = [OP.FLP,OP.EOF,OP.POP,OP.XLM,OP.XLC]
         self.addr_addr = [OP.CPY, OP.ADD, OP.SUB, OP.MUL, OP.DIV, OP.COM]
         self.jumps = [OP.JMP,OP.JME,OP.JMG,OP.JML]
 

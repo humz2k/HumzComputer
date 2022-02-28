@@ -291,4 +291,10 @@ class OPMap:
     def op_EOF(self,command):
         pass
 
+    def op_XLM(self,command):
+        pass
+
+    def op_XLC(self,command):
+        pass
+
 OP = OPMap().generate_enum_opmap()
