@@ -434,4 +434,4 @@ class Compiler:
         return out
 
 if __name__ == "__main__":
-    compiler = Compiler("test.hl")
+    compiler = Compiler("programs/fib.hl")

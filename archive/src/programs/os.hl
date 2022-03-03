@@ -1,0 +1,25 @@
+
+unsigned_int command;
+unsigned_int n;
+unsigned_int temp;
+
+while 1 == 1; {
+  n = 0;
+  push ">";
+  flip;
+  input command;
+  push command;
+  while command != 13; {
+
+    flip;
+    n = n * 10;
+    temp = command - 48;
+    n = n + temp;
+    input command;
+    push command;
+  }
+
+  flip;
+  push "\n";
+  _load n;
+};
