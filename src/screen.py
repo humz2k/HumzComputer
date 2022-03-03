@@ -7,8 +7,8 @@ def clearConsole():
     os.system(command)
 
 class screen:
-    def __init__(self,size=[50,50]):
-        self.size=[50,50]
+    def __init__(self,size=[50,20]):
+        self.size=size
         self.screen = [""]
 
     def push(self,inp):

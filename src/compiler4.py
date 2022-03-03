@@ -26,7 +26,10 @@ class Compiler:
         self.variables = {}
         self.current_var = 0
         self.consts = 0
+        self.mem_used = 0
+        self.malloc_start = 0
         self.compiled = self.compile()
+
 
     def compile(self):
         self.find_variables()
@@ -37,6 +40,10 @@ class Compiler:
         malloc_start = 0
         if len(self.variables.keys()) > 0:
             malloc_start = self.variables[list(self.variables.keys())[-1]][-1].addr_offset + translate_length + 1
+        else:
+            malloc_start = translate_length + 1
+        self.malloc_start = malloc_start
+
         out = self.do_offsets(translate_length) + self.do_assigns() + ["LDM " + str(malloc_start) + " REGISTER_DIR MC"] + out + ["EOF"]
         return out
 
@@ -395,4 +402,4 @@ class Compiler:
 
 
 if __name__ == "__main__":
-    compiler = Compiler("programs/test.hl")
+    compiler = Compiler("programs/line.hl")

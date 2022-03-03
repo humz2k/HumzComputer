@@ -1,0 +1,61 @@
+unsigned_int a[30] = "#####                         ";
+unsigned_int length = 30;
+unsigned_int in;
+int count = 0;
+unsigned_int i = 0;
+
+
+push a;
+flip;
+
+while i < length; {
+  pop;
+  i = i + 1;
+};
+
+
+while in != "q"; {
+  input in;
+
+  count = 0;
+  while a[count] != "#"; {
+
+    count = count + 1;
+
+  };
+
+  if in == 77; {
+    count = count + 5;
+    if count < length; {
+      count = count - 5;
+      a[count] = " ";
+      count = count + 5;
+      a[count] = "#";
+    };
+
+  };
+
+  if in == 75; {
+    count = count - 1;
+    if count >= 0; {
+      count = count + 5;
+      a[count] = " ";
+      count = count - 5;
+      a[count] = "#";
+    };
+
+  };
+
+  push a;
+
+  flip;
+
+  i = 0;
+  while i < length; {
+    pop;
+    i = i + 1;
+  };
+
+
+
+};

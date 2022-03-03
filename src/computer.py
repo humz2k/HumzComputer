@@ -231,9 +231,6 @@ class Parser:
 
 if __name__ == "__main__":
     cpu = CPU(single_program=False)
-    #parser = Parser()
-
-    #parsed = parser.parse("programs/fib.ha")
 
     cpu.load_file(0)
 

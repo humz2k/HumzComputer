@@ -1,2 +1,27 @@
 push "BOOB\n";
+
+unsigned_int a;
+unsigned_int b = 10000;
+malloc a b;
+
+unsigned_int i = 0;
+while i < b; {
+
+  &a[i] = i;
+  i = i + 1;
+
+};
+
+i = 0;
+while i < b; {
+
+  push_int &a[i];
+  push "\n";
+  i = i + 1;
+
+};
+
+unsigned_int test;
+malloc test 5;
+
 flip;
