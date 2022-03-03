@@ -1,7 +1,7 @@
 from computer import *
 from compiler4 import *
 
-file = "programs/fib.hl"
+file = "programs/test.hl"
 compiler = Compiler(file)
 parser = Parser()
 out = parser.parse(compiler.compiled,False)
